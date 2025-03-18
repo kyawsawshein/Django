@@ -6,7 +6,10 @@ name = "pypi"
 [packages]
 django = "*"
 psycopg = "*"
+django-allauth = "*"
+environs = {extras = ["django"], version = "*"}
 django-crispy-forms = "*"
+pillow = "*"
 
 [dev-packages]
 
