@@ -1,0 +1,15 @@
+.vscode
+.cj
+.env
+*.env
+*.prod
+*.pyc
+*.py~
+*.log
+*.dat
+.venv
+.prod
+.python-version
+__pycache__
+*.err
+*.csv
