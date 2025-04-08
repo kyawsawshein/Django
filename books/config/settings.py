@@ -20,6 +20,11 @@ env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# django-debug-toolbar
+import socket
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -43,18 +48,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.sites',
+    'whitenoise.runserver_nostatic',
 
     # Third-party
     'crispy_forms',
+    # 'crispy_bootstrap5',
     'allauth',
     'allauth.account',
+    'debug_toolbar',
 
     # Local
-    'accounts',
-    'pages',
-    'books',
+    'accounts.apps.AccountsConfig',
+    'pages.apps.PagesConfig',
+    'books.apps.BooksConfig',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +75,8 @@ MIDDLEWARE = [
 
     # Add middleware
     'allauth.account.middleware.AccountMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddlewarer',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -149,22 +158,26 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressdManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+
+MEDIA_URL =  '/media/'
+MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Add new
-AUTH_USER_MODEL = 'accounts.CustomerUser'
+AUTH_USER_MODEL = "accounts.CustomUser"
+
 LOGIN_REDIRECT_URL = 'home'
 # LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT = 'home'
 
-
-
 # django-crispy-forms
-CRISPY_TEMPLATE_PACK = 'bootstrap4'  # Use 'bootstrap5' if using Bootstrap 5
-
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"  # new
+CRISPY_TEMPLATE_PACK = "bootstrap5"  # new
 
 SITE_ID = 1
 
@@ -175,12 +188,14 @@ AUTHENTICATION_BACKENDS = (
 EMAIL_BACKEN = 'django.core.mail.backends.smtp.EmailBackend'
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 
 DEFAULT_FROM_EMAIL = 'admin@djangobookstore.com'
 
+SECURE_HSTS_SECONDS = env.int("DJANGO_SECURE_HSTS_SECONDS", default=2592000)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("DJANGO_SECURE_HSTS_ INCLUDE_SUBDOMAINS", default=True)
+SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
 
-MEDIA_URL =  '/media/'
-MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
