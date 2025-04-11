@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     # Local
     'todos.apps.TodosConfig',
+    'posts.apps.PostsConfig',
 ]
 
 REST_FRAMEWORK = {
